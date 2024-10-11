@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche d'Entreprise - API Justice</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Recherche d'entreprise - API Justice</h1>
+    <form id="search-form" class="my-5">
+        <div class="form-group">
+            <input type="text" class="form-control" id="entreprise" name="entreprise" placeholder="Entrez le nom de l'entreprise" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+    </form>
+
+    <div id="results" class="mt-5"></div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search-form').on('submit', function(e) {
+            e.preventDefault();
+            let entreprise = $('#entreprise').val();
+
+            $.ajax({
+                url: '/search',
+                method: 'POST',
+                data: { entreprise: entreprise },
+                success: function(data) {
+                    let resultHTML = '';
+                    if (data.length > 0) {
+                        resultHTML += '<h2>Résultats:</h2><ul class="list-group">';
+                        $.each(data, function(index, item) {
+                            resultHTML += `
+                                <li class="list-group-item">
+                                    <strong>${item.reference}</strong><br>
+                                    Date de décision: ${item.date_decision}<br>
+                                    <a href="#" class="btn btn-link details-link" data-id="${item.id}">Voir détails</a>
+                                </li>`;
+                        });
+                        resultHTML += '</ul>';
+                    } else {
+                        resultHTML = '<p>Aucun résultat trouvé.</p>';
+                    }
+                    $('#results').html(resultHTML);
+                }
+            });
+        });
+
+        $(document).on('click', '.details-link', function(e) {
+            e.preventDefault();
+            let id_affaire = $(this).data('id');
+
+            $.ajax({
+                url: '/details/' + id_affaire,
+                method: 'GET',
+                success: function(data) {
+                    alert('Résumé: ' + data.resume);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
