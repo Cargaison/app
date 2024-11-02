@@ -2,39 +2,234 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recherche d'Entreprise - API Justice</title>
+    <title>Diagnostics d'Entreprise</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Custom CSS -->
+    <style>
+        /* Style pour l'animation de chargement */
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        .loading-spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Styles pour les colonnes de résultats */
+        .results-column {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        /* Style pour la visualisation Cytoscape */
+        #cy {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            display: none;
+            background-color: #f9f9f9;
+        }
+        /* Styles pour la légende des nœuds */
+        .badge-purple {
+            background-color: #6f42c1;
+            color: #ffffff;
+        }
+        /* Styles pour la légende des relations */
+        .relation-badge {
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Recherche d'entreprise - API Justice</h1>
+    <h1 class="text-center">Diagnostics d'Entreprise</h1>
+
+    <!-- Formulaire de Recherche Unique -->
     <form id="search-form" class="my-5">
         <div class="form-group">
-            <input type="text" class="form-control" id="entreprise" name="entreprise" placeholder="Entrez le nom de l'entreprise" required>
+            <input type="text" class="form-control" id="company_query" name="company_query" placeholder="Nom de l'entreprise" required>
         </div>
-        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <button type="submit" class="btn btn-primary btn-block">Rechercher</button>
     </form>
 
-    <div id="results" class="mt-5"></div>
+    <!-- Animation de Chargement -->
+    <div id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Colonnes de Résultats -->
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Résultats Juridiques</h2>
+            <div id="legal-results" class="results-column"></div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center" id="legal-pagination"></ul>
+            </nav>
+        </div>
+
+        <div class="col-md-6">
+            <h2>Résultats d'Évasion Fiscale</h2>
+            <div id="tax-evasion-results" class="results-column"></div>
+        </div>
+    </div>
+
+    <!-- Visualisation Réseau -->
+    <h2 class="text-center mt-5">Visualisation des Relations</h2>
+    <button id="show-visualization" class="btn btn-info btn-block mb-3">Afficher la Visualisation</button>
+
+    <!-- Légende des Relations -->
+    <div class="mb-3">
+        <h5>Légende des Relations :</h5>
+        <ul class="list-inline">
+            <li class="list-inline-item">
+                <span class="badge relation-badge" style="background-color: #FF5733;">OFFICER OF</span>
+            </li>
+            <li class="list-inline-item">
+                <span class="badge relation-badge" style="background-color: #33FF57;">DIRECTOR OF</span>
+            </li>
+            <li class="list-inline-item">
+                <span class="badge relation-badge" style="background-color: #3357FF;">SHAREHOLDER OF</span>
+            </li>
+            <li class="list-inline-item">
+                <span class="badge relation-badge" style="background-color: #F1C40F;">REGISTERED ADDRESS</span>
+            </li>
+            <li class="list-inline-item">
+                <span class="badge relation-badge" style="background-color: #9B59B6;">INTERMEDIARY OF</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Légende des Types de Nœuds -->
+    <div class="mb-3">
+        <h5>Légende des Types de Nœuds :</h5>
+        <ul class="list-inline">
+            <li class="list-inline-item"><span class="badge badge-success">Addresses</span></li>
+            <li class="list-inline-item"><span class="badge badge-info">Entities</span></li>
+            <li class="list-inline-item"><span class="badge badge-warning">Intermediaries</span></li>
+            <li class="list-inline-item"><span class="badge badge-danger">Officers</span></li>
+            <li class="list-inline-item"><span class="badge badge-purple">Others</span></li>
+        </ul>
+    </div>
+
+    <div id="cy"></div>
 </div>
+
+<!-- Modal pour les détails des décisions -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <!-- En-tête de la modal -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailsModalLabel">Détails de la décision</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <!-- Corps de la modal -->
+      <div class="modal-body">
+        <!-- Le contenu sera chargé ici -->
+      </div>
+      <!-- Pied de page de la modal -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inclusion des scripts -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Cytoscape.js -->
+<script src="https://unpkg.com/cytoscape@3.18.2/dist/cytoscape.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        $('#search-form').on('submit', function(e) {
-            e.preventDefault();
-            let entreprise = $('#entreprise').val();
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentQuery = '';
+        let ajaxRequests = 0;
 
+        function showLoading() {
+            $('#loading').show();
+        }
+
+        function hideLoading() {
+            $('#loading').hide();
+        }
+
+        function generatePagination(total, current) {
+            let paginationHTML = '';
+            let maxPagesToShow = 5;
+            let startPage = Math.max(1, current - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(total, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage < maxPagesToShow - 1) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
+            if (current > 1) {
+                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${current - 1}">Précédent</a></li>`;
+            } else {
+                paginationHTML += `<li class="page-item disabled"><span class="page-link">Précédent</span></li>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === current) {
+                    paginationHTML += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+                } else {
+                    paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                }
+            }
+
+            if (current < total) {
+                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${current + 1}">Suivant</a></li>`;
+            } else {
+                paginationHTML += `<li class="page-item disabled"><span class="page-link">Suivant</span></li>`;
+            }
+
+            $('#legal-pagination').html(paginationHTML);
+        }
+
+        function loadLegalResults(query, page) {
+            ajaxRequests++;
+            if (ajaxRequests === 1) {
+                showLoading();
+            }
             $.ajax({
                 url: '/search',
                 method: 'POST',
-                data: { entreprise: entreprise },
+                data: { entreprise: query, page: page },
                 success: function(data) {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
                     let resultHTML = '';
-                    if (data.length > 0) {
-                        resultHTML += '<h2>Résultats:</h2><ul class="list-group">';
-                        $.each(data, function(index, item) {
+                    if (data.resultats && data.resultats.length > 0) {
+                        resultHTML += '<ul class="list-group">';
+                        $.each(data.resultats, function(index, item) {
                             resultHTML += `
                                 <li class="list-group-item">
                                     <strong>${item.reference}</strong><br>
@@ -46,22 +241,240 @@
                     } else {
                         resultHTML = '<p>Aucun résultat trouvé.</p>';
                     }
-                    $('#results').html(resultHTML);
+                    $('#legal-results').html(resultHTML);
+
+                    totalPages = Math.ceil(data.total_results / data.resultats_par_page);
+                    currentPage = data.page;
+                    generatePagination(totalPages, currentPage);
+                },
+                error: function() {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    $('#legal-results').html('<p>Une erreur est survenue lors de la recherche juridique.</p>');
                 }
             });
-        });
+        }
 
         $(document).on('click', '.details-link', function(e) {
             e.preventDefault();
             let id_affaire = $(this).data('id');
 
+            ajaxRequests++;
+            if (ajaxRequests === 1) {
+                showLoading();
+            }
             $.ajax({
                 url: '/details/' + id_affaire,
                 method: 'GET',
                 success: function(data) {
-                    alert('Résumé: ' + data.resume);
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    // Mettre à jour le contenu de la modal et l'afficher
+                    $('#detailsModal .modal-body').html('<p>' + data.resume + '</p>');
+                    $('#detailsModal').modal('show');
+                },
+                error: function() {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    alert('Une erreur est survenue lors de la récupération des détails.');
                 }
             });
+        });
+
+        function loadTaxEvasionResults(query) {
+            ajaxRequests++;
+            if (ajaxRequests === 1) {
+                showLoading();
+            }
+            $.ajax({
+                url: '/tax_evasion',
+                method: 'POST',
+                data: { company_name: query },
+                success: function(data) {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    let resultHTML = '';
+                    if (data.nodes.length > 0 || data.edges.length > 0) {
+                        resultHTML += '<ul class="list-group">';
+                        $.each(data.nodes, function(index, node) {
+                            resultHTML += `<li class="list-group-item"><strong>${node.name}</strong> (${node.type})</li>`;
+                        });
+                        resultHTML += '</ul>';
+                        $('#tax-evasion-results').html(resultHTML);
+                        // Stocker les données pour la visualisation
+                        window.taxEvasionData = data;
+                    } else {
+                        resultHTML = '<p>Aucune information trouvée.</p>';
+                        $('#tax-evasion-results').html(resultHTML);
+                        window.taxEvasionData = null;
+                    }
+                },
+                error: function() {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    $('#tax-evasion-results').html('<p>Une erreur est survenue lors de la recherche d\'évasion fiscale.</p>');
+                }
+            });
+        }
+
+        $('#show-visualization').on('click', function() {
+            const query = $('#company_query').val().trim();
+            if (query === '') {
+                alert('Veuillez entrer le nom d\'une entreprise.');
+                return;
+            }
+
+            if (window.taxEvasionData && window.taxEvasionData.nodes.length > 0) {
+                $('#cy').show();
+                renderGraph(window.taxEvasionData);
+            } else {
+                alert('Aucune donnée disponible pour la visualisation.');
+            }
+        });
+
+        function renderGraph(data) {
+            console.log("Données reçues pour la visualisation :", data);
+            let elements = [];
+            let addedNodes = new Set();
+
+            // Définir les couleurs pour chaque type de nœud
+            const typeColors = {
+                'Entities': '#17a2b8',
+                'Officers': '#dc3545',
+                'Intermediaries': '#ffc107',
+                'Addresses': '#28a745',
+                'Others': '#6f42c1'
+            };
+
+            // Définir les types de relations
+            const relationTypes = {
+                'OFFICER OF': { color: '#FF5733', label: 'OFFICER OF' },
+                'DIRECTOR OF': { color: '#33FF57', label: 'DIRECTOR OF' },
+                'SHAREHOLDER OF': { color: '#3357FF', label: 'SHAREHOLDER OF' },
+                'REGISTERED ADDRESS': { color: '#F1C40F', label: 'REGISTERED ADDRESS' },
+                'INTERMEDIARY OF': { color: '#9B59B6', label: 'INTERMEDIARY OF' }
+            };
+
+            // Créer les nœuds
+            data.nodes.forEach(function(node) {
+                if (node.id && node.name && node.type) {
+                    if (!addedNodes.has(node.id)) {
+                        elements.push({
+                            data: {
+                                id: node.id,
+                                label: node.name,
+                                type: node.type
+                            }
+                        });
+                        addedNodes.add(node.id);
+                    }
+                } else {
+                    console.warn("Nœud avec des valeurs manquantes :", node);
+                }
+            });
+
+            // Créer les arêtes
+            data.edges.forEach(function(edge) {
+                if (edge.source && edge.target && edge.rel_type) {
+                    elements.push({
+                        data: {
+                            source: edge.source,
+                            target: edge.target,
+                            label: relationTypes[edge.rel_type] ? relationTypes[edge.rel_type].label : edge.rel_type,
+                            rel_type: edge.rel_type
+                        }
+                    });
+                } else {
+                    console.warn("Arête avec des valeurs manquantes :", edge);
+                }
+            });
+
+            // Initialiser Cytoscape
+            try {
+                let cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements: elements,
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'label': 'data(label)',
+                                'background-color': function(ele) {
+                                    return typeColors[ele.data('type')] || '#007bff';
+                                },
+                                'color': '#000',
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'font-size': '12px',
+                                'width': '30px',
+                                'height': '30px',
+                                'border-width': 2,
+                                'border-color': '#ffffff'
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 2,
+                                'line-color': function(ele) {
+                                    let relType = ele.data('rel_type');
+                                    return relationTypes[relType] ? relationTypes[relType].color : '#888';
+                                },
+                                'target-arrow-color': function(ele) {
+                                    let relType = ele.data('rel_type');
+                                    return relationTypes[relType] ? relationTypes[relType].color : '#888';
+                                },
+                                'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                'label': 'data(label)',
+                                'font-size': '10px',
+                                'text-rotation': 'autorotate',
+                                'color': '#000',
+                                'text-background-color': '#fff',
+                                'text-background-opacity': 1,
+                                'text-background-padding': '2px'
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        padding: 10
+                    }
+                });
+            } catch (error) {
+                console.error("Erreur lors de l'initialisation de Cytoscape :", error);
+            }
+        }
+
+        $('#search-form').on('submit', function(e) {
+            e.preventDefault();
+            let query = $('#company_query').val().trim();
+            if (query === '') {
+                alert('Veuillez entrer le nom d\'une entreprise.');
+                return;
+            }
+            currentQuery = query;
+            currentPage = 1;
+            loadLegalResults(query, currentPage);
+            loadTaxEvasionResults(query);
+        });
+
+        $('#legal-pagination').on('click', 'a.page-link', function(e) {
+            e.preventDefault();
+            let selectedPage = $(this).data('page');
+            if (selectedPage && selectedPage !== currentPage) {
+                loadLegalResults(currentQuery, selectedPage);
+            }
         });
     });
 </script>
