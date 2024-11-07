@@ -55,6 +55,11 @@
             font-size: 12px;
             margin-right: 5px;
         }
+        /* Styles pour le sous-titre */
+        .subtitle {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -76,7 +81,8 @@
 
     <!-- Colonnes de Résultats -->
     <div class="row">
-        <div class="col-md-6">
+        <!-- Colonne Résultats Juridiques -->
+        <div class="col-md-4">
             <h2>Résultats Juridiques</h2>
             <div id="legal-results" class="results-column"></div>
             <nav aria-label="Page navigation example">
@@ -84,9 +90,17 @@
             </nav>
         </div>
 
-        <div class="col-md-6">
+        <!-- Colonne Résultats d'Évasion Fiscale -->
+        <div class="col-md-4">
             <h2>Résultats d'Évasion Fiscale</h2>
             <div id="tax-evasion-results" class="results-column"></div>
+        </div>
+
+        <!-- Colonne Score Environnemental CDP -->
+        <div class="col-md-4">
+            <h2>Score environnemental CDP</h2>
+            <p class="subtitle">Carbon Disclosure Project est une organisation qui publie des données sur l'impact environnemental des plus grandes entreprises. Elle est basée au Royaume-Uni.</p>
+            <div id="environmental-score-results" class="results-column"></div>
         </div>
     </div>
 
@@ -257,36 +271,6 @@
             });
         }
 
-        $(document).on('click', '.details-link', function(e) {
-            e.preventDefault();
-            let id_affaire = $(this).data('id');
-
-            ajaxRequests++;
-            if (ajaxRequests === 1) {
-                showLoading();
-            }
-            $.ajax({
-                url: '/details/' + id_affaire,
-                method: 'GET',
-                success: function(data) {
-                    ajaxRequests--;
-                    if (ajaxRequests === 0) {
-                        hideLoading();
-                    }
-                    // Mettre à jour le contenu de la modal et l'afficher
-                    $('#detailsModal .modal-body').html('<p>' + data.resume + '</p>');
-                    $('#detailsModal').modal('show');
-                },
-                error: function() {
-                    ajaxRequests--;
-                    if (ajaxRequests === 0) {
-                        hideLoading();
-                    }
-                    alert('Une erreur est survenue lors de la récupération des détails.');
-                }
-            });
-        });
-
         function loadTaxEvasionResults(query) {
             ajaxRequests++;
             if (ajaxRequests === 1) {
@@ -327,21 +311,58 @@
             });
         }
 
-        $('#show-visualization').on('click', function() {
-            const query = $('#company_query').val().trim();
-            if (query === '') {
-                alert('Veuillez entrer le nom d\'une entreprise.');
-                return;
+        function loadEnvironmentalScore(query) {
+            ajaxRequests++;
+            if (ajaxRequests === 1) {
+                showLoading();
             }
+            $.ajax({
+                url: '/environmental_score',
+                method: 'POST',
+                data: { company_name: query },
+                success: function(data) {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    let resultHTML = '';
+                    if (data.length > 0) {
+                        resultHTML += '<ul class="list-group">';
+                        $.each(data, function(index, item) {
+                            resultHTML += `
+                                <li class="list-group-item">
+                                    <strong>${item.Name}</strong><br>
+                                    <a href="${item.Link}" target="_blank">Voir la réponse CDP</a><br>
+                                    Thème: ${item.Theme}<br>
+                                    Année: ${item.Year}<br>
+                                    Statut: ${item.Status}<br>
+                                    Score: ${item.Score}
+                                </li>`;
+                        });
+                        resultHTML += '</ul>';
+                        $('#environmental-score-results').html(resultHTML);
+                    } else {
+                        resultHTML = '<p>Aucune donnée CDP trouvée.</p>';
+                        $('#environmental-score-results').html(resultHTML);
+                    }
+                },
+                error: function(xhr) {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        $('#environmental-score-results').html(`<p>${xhr.responseJSON.error}</p>`);
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        $('#environmental-score-results').html(`<p>${xhr.responseJSON.message}</p>`);
+                    } else {
+                        $('#environmental-score-results').html('<p>Une erreur est survenue lors de la récupération du score environnemental.</p>');
+                    }
+                }
+            });
+        }
 
-            if (window.taxEvasionData && window.taxEvasionData.nodes.length > 0) {
-                $('#cy').show();
-                renderGraph(window.taxEvasionData);
-            } else {
-                alert('Aucune donnée disponible pour la visualisation.');
-            }
-        });
-
+        // Fonction pour charger les résultats de visualisation fiscale
         function renderGraph(data) {
             console.log("Données reçues pour la visualisation :", data);
             let elements = [];
@@ -467,6 +488,7 @@
             currentPage = 1;
             loadLegalResults(query, currentPage);
             loadTaxEvasionResults(query);
+            loadEnvironmentalScore(query);  // Charger le score environnemental
         });
 
         $('#legal-pagination').on('click', 'a.page-link', function(e) {
@@ -474,6 +496,51 @@
             let selectedPage = $(this).data('page');
             if (selectedPage && selectedPage !== currentPage) {
                 loadLegalResults(currentQuery, selectedPage);
+            }
+        });
+
+        $(document).on('click', '.details-link', function(e) {
+            e.preventDefault();
+            let id_affaire = $(this).data('id');
+
+            ajaxRequests++;
+            if (ajaxRequests === 1) {
+                showLoading();
+            }
+            $.ajax({
+                url: '/details/' + id_affaire,
+                method: 'GET',
+                success: function(data) {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    // Mettre à jour le contenu de la modal et l'afficher
+                    $('#detailsModal .modal-body').html('<p>' + data.resume + '</p>');
+                    $('#detailsModal').modal('show');
+                },
+                error: function() {
+                    ajaxRequests--;
+                    if (ajaxRequests === 0) {
+                        hideLoading();
+                    }
+                    alert('Une erreur est survenue lors de la récupération des détails.');
+                }
+            });
+        });
+
+        $('#show-visualization').on('click', function() {
+            const query = $('#company_query').val().trim();
+            if (query === '') {
+                alert('Veuillez entrer le nom d\'une entreprise.');
+                return;
+            }
+
+            if (window.taxEvasionData && window.taxEvasionData.nodes.length > 0) {
+                $('#cy').show();
+                renderGraph(window.taxEvasionData);
+            } else {
+                alert('Aucune donnée disponible pour la visualisation.');
             }
         });
     });
