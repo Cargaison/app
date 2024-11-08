@@ -5,8 +5,21 @@
     <title>Diagnostics d'Entreprise</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Typed.js pour l'effet de tapage -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <!-- Google Fonts (Roboto Mono) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
+        /* Fond de la page */
+        body {
+            background-color: #000000; /* Noir */
+            color: #ffffff; /* Texte en blanc par défaut */
+            font-family: 'Roboto Mono', monospace;
+        }
+
         /* Style pour l'animation de chargement */
         #loading {
             display: none;
@@ -17,36 +30,81 @@
             z-index: 9999;
         }
         .loading-spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #007bff;
+            border: 6px solid #f3f3f3; /* Réduit de 8px à 6px */
+            border-top: 6px solid #17a2b8; /* Bleu clair */
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 40px; /* Réduit de 60px à 40px */
+            height: 40px; /* Réduit de 60px à 40px */
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Styles pour les colonnes de résultats */
-        .results-column {
-            max-height: 600px;
-            overflow-y: auto;
+
+        /* Styles pour les colonnes de résultats et la barre de recherche */
+        .results-column, #search-form {
+            background-color: #2b2d30; /* Couleur des fenêtres */
+            padding: 5px; /* Réduit de 7px à 5px */
+            border-radius: 8px;
+            color: #ffffff; /* Texte en blanc */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex: 1; /* Permet aux colonnes de s'étendre de manière égale */
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Style pour le formulaire de recherche */
+        #search-form .form-control {
+            background-color: #1e1f22; /* Couleur de l'input */
+            border: 1px solid #444444;
+            color: #ffffff;
+            padding: 8px; /* Réduit de 10px à 8px */
+        }
+        #search-form .form-control::placeholder {
+            color: #aaaaaa; /* Placeholder en gris clair */
+        }
+
+        /* Style pour les boutons */
+        .btn-primary {
+            background-color: #17a2b8; /* Bleu clair */
+            border-color: #17a2b8;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            transform: scale(1.05); /* Effet d'agrandissement au survol */
+        }
+        .btn-info {
+            background-color: #6c757d; /* Gris */
+            border-color: #6c757d;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+        }
+        .btn-info:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+            transform: scale(1.05); /* Effet d'agrandissement au survol */
+        }
+
         /* Style pour la visualisation Cytoscape */
         #cy {
             width: 100%;
-            height: 600px;
-            border: 1px solid #ddd;
+            height: 300px; /* Réduit de moitié depuis 600px */
+            border: 1px solid #444444;
             margin-top: 20px;
             display: none;
-            background-color: #f9f9f9;
+            background-color: #1e1f22;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         /* Styles pour la légende des nœuds */
         .badge-purple {
             background-color: #6f42c1;
             color: #ffffff;
         }
+
         /* Styles pour la légende des relations */
         .relation-badge {
             color: #ffffff;
@@ -55,23 +113,126 @@
             font-size: 12px;
             margin-right: 5px;
         }
+
         /* Styles pour le sous-titre */
         .subtitle {
             font-size: 0.8rem;
-            color: #6c757d;
+            color: #cccccc;
+        }
+
+        /* Styles pour les listes groupées */
+        .list-group-item {
+            background-color: #1e1f22;
+            border: 1px solid #444444;
+            color: #ffffff;
+            flex: 1; /* Permet aux éléments de la liste de s'étendre */
+            margin-bottom: 5px; /* Réduit de 10px à 5px */
+            padding: 8px; /* Réduit de 10px à 8px */
+            display: flex;
+            align-items: center;
+        }
+
+        .list-group-item a.btn-link {
+            color: #17a2b8;
+        }
+        .list-group-item a.btn-link:hover {
+            color: #138496;
+            text-decoration: underline;
+        }
+
+        /* Styles pour les titres */
+        h1, h2, h5 {
+            color: #17a2b8; /* Bleu clair pour les titres */
+            margin-bottom: 15px; /* Réduit de 20px à 15px */
+        }
+
+        /* Effet de tapage pour le titre principal */
+        .typed-cursor {
+            font-weight: bold;
+            color: #17a2b8;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Modal personnalisé */
+        .modal-content {
+            background-color: #2b2d30;
+            color: #ffffff;
+            border: 1px solid #444444;
+        }
+        .modal-header, .modal-footer {
+            border-color: #444444;
+        }
+        .modal-title {
+            color: #ffffff;
+        }
+        .close {
+            color: #ffffff;
+        }
+        .close:hover {
+            color: #dddddd;
+        }
+
+        /* Ajustements pour les badges dans les légendes */
+        .badge-success {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+            color: #ffffff;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+
+        /* Styles pour la section de résultats pour qu'elles aient la même hauteur */
+        .equal-height-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .equal-height-row > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pagination centrée */
+        .pagination {
+            justify-content: center;
+        }
+
+        /* Pastille pour le score environnemental */
+        .score-pastille {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Diagnostics d'Entreprise</h1>
+    <!-- Titre Principal avec Effet de Tapage -->
+    <h1 class="text-center" id="typed-title"></h1>
 
     <!-- Formulaire de Recherche Unique -->
     <form id="search-form" class="my-5">
         <div class="form-group">
             <input type="text" class="form-control" id="company_query" name="company_query" placeholder="Nom de l'entreprise" required>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Rechercher</button>
+        <button type="submit" class="btn btn-primary btn-block" aria-label="Rechercher une entreprise">
+            <i class="fas fa-search"></i> Rechercher
+        </button>
     </form>
 
     <!-- Animation de Chargement -->
@@ -79,28 +240,42 @@
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Colonnes de Résultats -->
-    <div class="row">
+    <!-- Colonnes de Résultats avec même taille -->
+    <div class="row equal-height-row">
         <!-- Colonne Résultats Juridiques -->
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4 d-flex flex-column">
             <h2>Résultats Juridiques</h2>
-            <div id="legal-results" class="results-column"></div>
+            <div id="legal-results" class="results-column mb-3" style="flex: 1;">
+                <!-- Contenu Juridique -->
+            </div>
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center" id="legal-pagination"></ul>
             </nav>
         </div>
 
         <!-- Colonne Résultats d'Évasion Fiscale -->
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4 d-flex flex-column">
             <h2>Résultats d'Évasion Fiscale</h2>
-            <div id="tax-evasion-results" class="results-column"></div>
+            <div id="tax-evasion-results" class="results-column mb-3" style="flex: 1;">
+                <!-- Contenu Évasion Fiscale -->
+            </div>
+            <!-- Si nécessaire, ajouter une pagination ici -->
+            <!-- <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center" id="tax-evasion-pagination"></ul>
+            </nav> -->
         </div>
 
         <!-- Colonne Score Environnemental CDP -->
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4 d-flex flex-column">
             <h2>Score environnemental CDP</h2>
             <p class="subtitle">Carbon Disclosure Project est une organisation qui publie des données sur l'impact environnemental des plus grandes entreprises. Elle est basée au Royaume-Uni.</p>
-            <div id="environmental-score-results" class="results-column"></div>
+            <div id="environmental-score-results" class="results-column mb-3" style="flex: 1;">
+                <!-- Contenu Score Environnemental -->
+            </div>
+            <!-- Si nécessaire, ajouter une pagination ici -->
+            <!-- <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center" id="environmental-pagination"></ul>
+            </nav> -->
         </div>
     </div>
 
@@ -184,6 +359,20 @@
         let totalPages = 1;
         let currentQuery = '';
         let ajaxRequests = 0;
+        const itemsPerPage = 5; // Pagination par 5 items
+
+        // Initialiser l'effet de tapage pour le titre principal
+        var typed = new Typed('#typed-title', {
+            strings: ["Bienvenue dans le Diagnostic d'Entreprise", "Analyse Juridique, Fiscale et Environnementale"],
+            typeSpeed: 50,
+            backSpeed: 25,
+            backDelay: 2000,
+            loop: true,
+            showCursor: true,
+            cursorChar: '|',
+            smartBackspace: true,
+            fadeOut: false, // Assure que le texte ne disparaît pas rapidement
+        });
 
         function showLoading() {
             $('#loading').show();
@@ -193,7 +382,7 @@
             $('#loading').hide();
         }
 
-        function generatePagination(total, current) {
+        function generatePagination(total, current, paginationId) {
             let paginationHTML = '';
             let maxPagesToShow = 5;
             let startPage = Math.max(1, current - Math.floor(maxPagesToShow / 2));
@@ -223,7 +412,7 @@
                 paginationHTML += `<li class="page-item disabled"><span class="page-link">Suivant</span></li>`;
             }
 
-            $('#legal-pagination').html(paginationHTML);
+            $(`#${paginationId}`).html(paginationHTML);
         }
 
         function loadLegalResults(query, page) {
@@ -234,7 +423,7 @@
             $.ajax({
                 url: '/search',
                 method: 'POST',
-                data: { entreprise: query, page: page },
+                data: { entreprise: query, page: page, per_page: itemsPerPage }, // Ajout de per_page
                 success: function(data) {
                     ajaxRequests--;
                     if (ajaxRequests === 0) {
@@ -257,9 +446,9 @@
                     }
                     $('#legal-results').html(resultHTML);
 
-                    totalPages = Math.ceil(data.total_results / data.resultats_par_page);
+                    totalPages = Math.ceil(data.total_results / itemsPerPage); // Utilisation de itemsPerPage
                     currentPage = data.page;
-                    generatePagination(totalPages, currentPage);
+                    generatePagination(totalPages, currentPage, 'legal-pagination');
                 },
                 error: function() {
                     ajaxRequests--;
@@ -329,6 +518,29 @@
                     if (data.length > 0) {
                         resultHTML += '<ul class="list-group">';
                         $.each(data, function(index, item) {
+                            // Détermination de la couleur de la pastille
+                            let colorClass = '';
+                            switch(item.Score.toUpperCase()) {
+                                case 'A':
+                                    colorClass = 'bg-success';
+                                    break;
+                                case 'B':
+                                    colorClass = 'bg-warning';
+                                    break;
+                                case 'C':
+                                case 'D':
+                                    colorClass = 'bg-orange'; // Nous définirons cette classe
+                                    break;
+                                case 'N':
+                                    colorClass = 'bg-secondary';
+                                    break;
+                                case 'F':
+                                    colorClass = 'bg-danger';
+                                    break;
+                                default:
+                                    colorClass = 'bg-light';
+                            }
+
                             resultHTML += `
                                 <li class="list-group-item">
                                     <strong>${item.Name}</strong><br>
@@ -336,7 +548,7 @@
                                     Thème: ${item.Theme}<br>
                                     Année: ${item.Year}<br>
                                     Statut: ${item.Status}<br>
-                                    Score: ${item.Score}
+                                    Score: <span class="score-pastille ${colorClass}"></span>${item.Score}
                                 </li>`;
                         });
                         resultHTML += '</ul>';
@@ -433,7 +645,7 @@
                                 'background-color': function(ele) {
                                     return typeColors[ele.data('type')] || '#007bff';
                                 },
-                                'color': '#000',
+                                'color': '#ffffff',
                                 'text-valign': 'center',
                                 'text-halign': 'center',
                                 'font-size': '12px',
@@ -460,9 +672,9 @@
                                 'label': 'data(label)',
                                 'font-size': '10px',
                                 'text-rotation': 'autorotate',
-                                'color': '#000',
-                                'text-background-color': '#fff',
-                                'text-background-opacity': 1,
+                                'color': '#ffffff',
+                                'text-background-color': '#000000',
+                                'text-background-opacity': 0.8,
                                 'text-background-padding': '2px'
                             }
                         }
@@ -491,6 +703,7 @@
             loadEnvironmentalScore(query);  // Charger le score environnemental
         });
 
+        // Pagination pour les résultats juridiques
         $('#legal-pagination').on('click', 'a.page-link', function(e) {
             e.preventDefault();
             let selectedPage = $(this).data('page');
@@ -498,6 +711,25 @@
                 loadLegalResults(currentQuery, selectedPage);
             }
         });
+
+        // Pagination pour les autres colonnes si nécessaire
+        /*
+        $('#tax-evasion-pagination').on('click', 'a.page-link', function(e) {
+            e.preventDefault();
+            let selectedPage = $(this).data('page');
+            if (selectedPage && selectedPage !== currentPageTaxEvasion) {
+                loadTaxEvasionResults(currentQuery, selectedPage);
+            }
+        });
+
+        $('#environmental-pagination').on('click', 'a.page-link', function(e) {
+            e.preventDefault();
+            let selectedPage = $(this).data('page');
+            if (selectedPage && selectedPage !== currentPageEnvironmental) {
+                loadEnvironmentalScore(currentQuery, selectedPage);
+            }
+        });
+        */
 
         $(document).on('click', '.details-link', function(e) {
             e.preventDefault();
