@@ -33,8 +33,8 @@
             border: 6px solid #f3f3f3; /* Réduit de 8px à 6px */
             border-top: 6px solid #17a2b8; /* Bleu clair */
             border-radius: 50%;
-            width: 40px; /* Réduit de 60px à 40px */
-            height: 40px; /* Réduit de 60px à 40px */
+            width: 30px; /* Réduit de 40px à 30px */
+            height: 30px; /* Réduit de 40px à 30px */
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
@@ -45,7 +45,7 @@
         /* Styles pour les colonnes de résultats et la barre de recherche */
         .results-column, #search-form {
             background-color: #2b2d30; /* Couleur des fenêtres */
-            padding: 5px; /* Réduit de 7px à 5px */
+            padding: 4px; /* Réduit de 5px à 4px */
             border-radius: 8px;
             color: #ffffff; /* Texte en blanc */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -59,7 +59,8 @@
             background-color: #1e1f22; /* Couleur de l'input */
             border: 1px solid #444444;
             color: #ffffff;
-            padding: 8px; /* Réduit de 10px à 8px */
+            padding: 6px; /* Réduit de 8px à 6px */
+            font-size: 0.9rem; /* Réduit la taille de la police */
         }
         #search-form .form-control::placeholder {
             color: #aaaaaa; /* Placeholder en gris clair */
@@ -70,6 +71,8 @@
             background-color: #17a2b8; /* Bleu clair */
             border-color: #17a2b8;
             transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+            font-size: 0.9rem; /* Réduit la taille de la police */
+            padding: 6px 12px; /* Réduit le padding */
         }
         .btn-primary:hover {
             background-color: #138496;
@@ -80,6 +83,8 @@
             background-color: #6c757d; /* Gris */
             border-color: #6c757d;
             transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+            font-size: 0.9rem; /* Réduit la taille de la police */
+            padding: 6px 12px; /* Réduit le padding */
         }
         .btn-info:hover {
             background-color: #5a6268;
@@ -90,9 +95,9 @@
         /* Style pour la visualisation Cytoscape */
         #cy {
             width: 100%;
-            height: 300px; /* Réduit de moitié depuis 600px */
+            height: 200px; /* Réduit encore de 300px à 200px */
             border: 1px solid #444444;
-            margin-top: 20px;
+            margin-top: 15px; /* Réduit de 20px à 15px */
             display: none;
             background-color: #1e1f22;
             border-radius: 8px;
@@ -108,15 +113,15 @@
         /* Styles pour la légende des relations */
         .relation-badge {
             color: #ffffff;
-            padding: 5px 10px;
+            padding: 3px 7px; /* Réduit le padding */
             border-radius: 4px;
-            font-size: 12px;
-            margin-right: 5px;
+            font-size: 10px; /* Réduit la taille de la police */
+            margin-right: 3px; /* Réduit la marge */
         }
 
         /* Styles pour le sous-titre */
         .subtitle {
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Réduit la taille de la police */
             color: #cccccc;
         }
 
@@ -126,14 +131,18 @@
             border: 1px solid #444444;
             color: #ffffff;
             flex: 1; /* Permet aux éléments de la liste de s'étendre */
-            margin-bottom: 5px; /* Réduit de 10px à 5px */
-            padding: 8px; /* Réduit de 10px à 8px */
+            margin-bottom: 3px; /* Réduit de 5px à 3px */
+            padding: 6px; /* Réduit de 8px à 6px */
             display: flex;
             align-items: center;
+            flex-direction: column; /* Alignement vertical */
+            font-size: 0.85rem; /* Réduit la taille de la police */
+            text-align: left; /* Aligne le texte à gauche */
         }
 
         .list-group-item a.btn-link {
             color: #17a2b8;
+            font-size: 0.85rem; /* Réduit la taille de la police */
         }
         .list-group-item a.btn-link:hover {
             color: #138496;
@@ -143,14 +152,33 @@
         /* Styles pour les titres */
         h1, h2, h5 {
             color: #17a2b8; /* Bleu clair pour les titres */
-            margin-bottom: 15px; /* Réduit de 20px à 15px */
+            margin-bottom: 10px; /* Réduit de 15px à 10px */
+            font-size: 1.5rem; /* Réduit la taille de la police */
+            display: inline-block; /* Assure que le titre et le curseur sont sur la même ligne */
         }
 
         /* Effet de tapage pour le titre principal */
-        .typed-cursor {
+        /* Effet de tapage pour le titre principal */
+.typed-cursor {
+    font-weight: bold;
+    color: #17a2b8;
+    animation: blink 0.7s infinite;
+    font-size: 1.2em; /* Taille du curseur */
+    vertical-align: middle; /* Aligne verticalement avec le texte */
+    display: inline; /* Assure que le curseur est en ligne avec le texte */
+    margin-left: 5px; /* Espace avant le curseur */
+    position: relative; /* Permet le décalage vertical */
+    top: -5px; /* Déplace le curseur vers le haut de 3px */
+}
+
+        {
             font-weight: bold;
             color: #17a2b8;
             animation: blink 0.7s infinite;
+            font-size: 1.2em; /* Augmente la taille du curseur */
+            vertical-align: middle; /* Aligne verticalement avec le texte */
+            display: inline; /* Assure que le curseur est en ligne avec le texte */
+            margin-left: 5px; /* Ajoute un léger espace avant le curseur */
         }
 
         @keyframes blink {
@@ -169,6 +197,7 @@
         }
         .modal-title {
             color: #ffffff;
+            font-size: 1.25rem; /* Réduit la taille de la police */
         }
         .close {
             color: #ffffff;
@@ -181,18 +210,26 @@
         .badge-success {
             background-color: #28a745;
             color: #ffffff;
+            font-size: 0.75rem; /* Réduit la taille de la police */
+            padding: 3px 7px; /* Réduit le padding */
         }
         .badge-info {
             background-color: #17a2b8;
             color: #ffffff;
+            font-size: 0.75rem; /* Réduit la taille de la police */
+            padding: 3px 7px; /* Réduit le padding */
         }
         .badge-warning {
             background-color: #ffc107;
             color: #212529;
+            font-size: 0.75rem; /* Réduit la taille de la police */
+            padding: 3px 7px; /* Réduit le padding */
         }
         .badge-danger {
             background-color: #dc3545;
             color: #ffffff;
+            font-size: 0.75rem; /* Réduit la taille de la police */
+            padding: 3px 7px; /* Réduit le padding */
         }
 
         /* Styles pour la section de résultats pour qu'elles aient la même hauteur */
@@ -208,6 +245,7 @@
         /* Pagination centrée */
         .pagination {
             justify-content: center;
+            margin-top: 5px; /* Réduit le margin */
         }
 
         /* Pastille pour le score environnemental */
@@ -218,6 +256,11 @@
             border-radius: 50%;
             margin-right: 5px;
         }
+
+        /* Classe personnalisée pour la couleur orange */
+        .bg-orange {
+            background-color: #fd7e14; /* Orange vif */
+        }
     </style>
 </head>
 <body>
@@ -226,7 +269,7 @@
     <h1 class="text-center" id="typed-title"></h1>
 
     <!-- Formulaire de Recherche Unique -->
-    <form id="search-form" class="my-5">
+    <form id="search-form" class="my-3">
         <div class="form-group">
             <input type="text" class="form-control" id="company_query" name="company_query" placeholder="Nom de l'entreprise" required>
         </div>
@@ -243,9 +286,9 @@
     <!-- Colonnes de Résultats avec même taille -->
     <div class="row equal-height-row">
         <!-- Colonne Résultats Juridiques -->
-        <div class="col-md-4 mb-4 d-flex flex-column">
+        <div class="col-md-4 mb-3 d-flex flex-column">
             <h2>Résultats Juridiques</h2>
-            <div id="legal-results" class="results-column mb-3" style="flex: 1;">
+            <div id="legal-results" class="results-column mb-2" style="flex: 1;">
                 <!-- Contenu Juridique -->
             </div>
             <nav aria-label="Page navigation example">
@@ -254,22 +297,23 @@
         </div>
 
         <!-- Colonne Résultats d'Évasion Fiscale -->
-        <div class="col-md-4 mb-4 d-flex flex-column">
+        <div class="col-md-4 mb-3 d-flex flex-column">
             <h2>Résultats d'Évasion Fiscale</h2>
-            <div id="tax-evasion-results" class="results-column mb-3" style="flex: 1;">
+            <p class="subtitle">En se basant sur les différentes bases de données fuitées mettant à jour des schémas d'évasions fiscales comme les Pandora Papers, nous sommes en mesure de mettre sous les feux des projecteurs des entités connectées à des paradis fiscaux.</p>
+            <div id="tax-evasion-results" class="results-column mb-2" style="flex: 1;">
                 <!-- Contenu Évasion Fiscale -->
             </div>
-            <!-- Si nécessaire, ajouter une pagination ici -->
-            <!-- <nav aria-label="Page navigation example">
+            <!-- Pagination pour Résultats d'Évasion Fiscale -->
+            <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center" id="tax-evasion-pagination"></ul>
-            </nav> -->
+            </nav>
         </div>
 
         <!-- Colonne Score Environnemental CDP -->
-        <div class="col-md-4 mb-4 d-flex flex-column">
+        <div class="col-md-4 mb-3 d-flex flex-column">
             <h2>Score environnemental CDP</h2>
             <p class="subtitle">Carbon Disclosure Project est une organisation qui publie des données sur l'impact environnemental des plus grandes entreprises. Elle est basée au Royaume-Uni.</p>
-            <div id="environmental-score-results" class="results-column mb-3" style="flex: 1;">
+            <div id="environmental-score-results" class="results-column mb-2" style="flex: 1;">
                 <!-- Contenu Score Environnemental -->
             </div>
             <!-- Si nécessaire, ajouter une pagination ici -->
@@ -280,11 +324,11 @@
     </div>
 
     <!-- Visualisation Réseau -->
-    <h2 class="text-center mt-5">Visualisation des Relations</h2>
+    <h2 class="text-center mt-4">Visualisation des Relations</h2>
     <button id="show-visualization" class="btn btn-info btn-block mb-3">Afficher la Visualisation</button>
 
     <!-- Légende des Relations -->
-    <div class="mb-3">
+    <div class="mb-2">
         <h5>Légende des Relations :</h5>
         <ul class="list-inline">
             <li class="list-inline-item">
@@ -306,7 +350,7 @@
     </div>
 
     <!-- Légende des Types de Nœuds -->
-    <div class="mb-3">
+    <div class="mb-2">
         <h5>Légende des Types de Nœuds :</h5>
         <ul class="list-inline">
             <li class="list-inline-item"><span class="badge badge-success">Addresses</span></li>
@@ -355,15 +399,18 @@
 
 <script>
     $(document).ready(function() {
-        let currentPage = 1;
-        let totalPages = 1;
+        let currentLegalPage = 1;
+        let totalLegalPages = 1;
+        let currentTaxPage = 1;
+        let totalTaxPages = 1;
         let currentQuery = '';
         let ajaxRequests = 0;
-        const itemsPerPage = 5; // Pagination par 5 items
+        const itemsPerPageLegal = 5; // Pagination par 5 items pour Résultats Juridiques
+        const itemsPerPageTax = 10;  // Pagination par 10 items pour Résultats d'Évasion Fiscale
 
         // Initialiser l'effet de tapage pour le titre principal
         var typed = new Typed('#typed-title', {
-            strings: ["Bienvenue dans le Diagnostic d'Entreprise", "Analyse Juridique, Fiscale et Environnementale"],
+            strings: ["Bienvenue sur Baum.","Que vaut l'éthique des entreprises?","Recherchez une compagnie à étudier" ,"Analyse Juridique, Fiscale et Environnementale"],
             typeSpeed: 50,
             backSpeed: 25,
             backDelay: 2000,
@@ -382,32 +429,32 @@
             $('#loading').hide();
         }
 
-        function generatePagination(total, current, paginationId) {
+        function generatePagination(totalPages, currentPage, paginationId) {
             let paginationHTML = '';
             let maxPagesToShow = 5;
-            let startPage = Math.max(1, current - Math.floor(maxPagesToShow / 2));
-            let endPage = Math.min(total, startPage + maxPagesToShow - 1);
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
             if (endPage - startPage < maxPagesToShow - 1) {
                 startPage = Math.max(1, endPage - maxPagesToShow + 1);
             }
 
-            if (current > 1) {
-                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${current - 1}">Précédent</a></li>`;
+            if (currentPage > 1) {
+                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">Précédent</a></li>`;
             } else {
                 paginationHTML += `<li class="page-item disabled"><span class="page-link">Précédent</span></li>`;
             }
 
             for (let i = startPage; i <= endPage; i++) {
-                if (i === current) {
+                if (i === currentPage) {
                     paginationHTML += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
                 } else {
                     paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
                 }
             }
 
-            if (current < total) {
-                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${current + 1}">Suivant</a></li>`;
+            if (currentPage < totalPages) {
+                paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">Suivant</a></li>`;
             } else {
                 paginationHTML += `<li class="page-item disabled"><span class="page-link">Suivant</span></li>`;
             }
@@ -423,8 +470,9 @@
             $.ajax({
                 url: '/search',
                 method: 'POST',
-                data: { entreprise: query, page: page, per_page: itemsPerPage }, // Ajout de per_page
+                data: { entreprise: query, page: page, per_page: itemsPerPageLegal },
                 success: function(data) {
+                    console.log("Résultats Juridiques :", data); // Ajout de log
                     ajaxRequests--;
                     if (ajaxRequests === 0) {
                         hideLoading();
@@ -446,9 +494,9 @@
                     }
                     $('#legal-results').html(resultHTML);
 
-                    totalPages = Math.ceil(data.total_results / itemsPerPage); // Utilisation de itemsPerPage
-                    currentPage = data.page;
-                    generatePagination(totalPages, currentPage, 'legal-pagination');
+                    totalLegalPages = Math.ceil(data.total_results / itemsPerPageLegal);
+                    currentLegalPage = data.page;
+                    generatePagination(totalLegalPages, currentLegalPage, 'legal-pagination');
                 },
                 error: function() {
                     ajaxRequests--;
@@ -460,7 +508,7 @@
             });
         }
 
-        function loadTaxEvasionResults(query) {
+        function loadTaxEvasionResults(query, page) {
             ajaxRequests++;
             if (ajaxRequests === 1) {
                 showLoading();
@@ -468,26 +516,35 @@
             $.ajax({
                 url: '/tax_evasion',
                 method: 'POST',
-                data: { company_name: query },
+                data: { company_name: query, page: page, per_page: itemsPerPageTax }, // Ajout de page et per_page
                 success: function(data) {
+                    console.log("Résultats d'Évasion Fiscale :", data); // Ajout de log
                     ajaxRequests--;
                     if (ajaxRequests === 0) {
                         hideLoading();
                     }
                     let resultHTML = '';
-                    if (data.nodes.length > 0 || data.edges.length > 0) {
+                    if (data.paginated_nodes && (data.paginated_nodes.length > 0 || (data.edges && data.edges.length > 0))) {
                         resultHTML += '<ul class="list-group">';
-                        $.each(data.nodes, function(index, node) {
+                        $.each(data.paginated_nodes, function(index, node) {
                             resultHTML += `<li class="list-group-item"><strong>${node.name}</strong> (${node.type})</li>`;
                         });
                         resultHTML += '</ul>';
                         $('#tax-evasion-results').html(resultHTML);
                         // Stocker les données pour la visualisation
-                        window.taxEvasionData = data;
+                        window.taxEvasionAllNodes = data.all_nodes || [];
+                        window.taxEvasionEdges = data.edges || [];
+                        // Générer la pagination
+                        totalTaxPages = Math.ceil(data.total_results / itemsPerPageTax);
+                        currentTaxPage = data.page;
+                        generatePagination(totalTaxPages, currentTaxPage, 'tax-evasion-pagination');
                     } else {
                         resultHTML = '<p>Aucune information trouvée.</p>';
                         $('#tax-evasion-results').html(resultHTML);
-                        window.taxEvasionData = null;
+                        window.taxEvasionAllNodes = [];
+                        window.taxEvasionEdges = [];
+                        // Supprimer la pagination si aucun résultat
+                        $('#tax-evasion-pagination').html('');
                     }
                 },
                 error: function() {
@@ -510,6 +567,7 @@
                 method: 'POST',
                 data: { company_name: query },
                 success: function(data) {
+                    console.log("Score Environnemental :", data); // Ajout de log
                     ajaxRequests--;
                     if (ajaxRequests === 0) {
                         hideLoading();
@@ -529,7 +587,7 @@
                                     break;
                                 case 'C':
                                 case 'D':
-                                    colorClass = 'bg-orange'; // Nous définirons cette classe
+                                    colorClass = 'bg-orange'; // Classe définie ci-dessus
                                     break;
                                 case 'N':
                                     colorClass = 'bg-secondary';
@@ -575,8 +633,8 @@
         }
 
         // Fonction pour charger les résultats de visualisation fiscale
-        function renderGraph(data) {
-            console.log("Données reçues pour la visualisation :", data);
+        function renderGraph(allNodes, edges) {
+            console.log("Données reçues pour la visualisation :", allNodes, edges);
             let elements = [];
             let addedNodes = new Set();
 
@@ -599,7 +657,7 @@
             };
 
             // Créer les nœuds
-            data.nodes.forEach(function(node) {
+            allNodes.forEach(function(node) {
                 if (node.id && node.name && node.type) {
                     if (!addedNodes.has(node.id)) {
                         elements.push({
@@ -617,7 +675,7 @@
             });
 
             // Créer les arêtes
-            data.edges.forEach(function(edge) {
+            edges.forEach(function(edge) {
                 if (edge.source && edge.target && edge.rel_type) {
                     elements.push({
                         data: {
@@ -648,17 +706,17 @@
                                 'color': '#ffffff',
                                 'text-valign': 'center',
                                 'text-halign': 'center',
-                                'font-size': '12px',
-                                'width': '30px',
-                                'height': '30px',
-                                'border-width': 2,
+                                'font-size': '10px', /* Réduit la taille de la police */
+                                'width': '20px',     /* Réduit la taille */
+                                'height': '20px',    /* Réduit la taille */
+                                'border-width': 1,   /* Réduit la bordure */
                                 'border-color': '#ffffff'
                             }
                         },
                         {
                             selector: 'edge',
                             style: {
-                                'width': 2,
+                                'width': 1, /* Réduit la largeur */
                                 'line-color': function(ele) {
                                     let relType = ele.data('rel_type');
                                     return relationTypes[relType] ? relationTypes[relType].color : '#888';
@@ -670,7 +728,7 @@
                                 'target-arrow-shape': 'triangle',
                                 'curve-style': 'bezier',
                                 'label': 'data(label)',
-                                'font-size': '10px',
+                                'font-size': '8px', /* Réduit la taille de la police */
                                 'text-rotation': 'autorotate',
                                 'color': '#ffffff',
                                 'text-background-color': '#000000',
@@ -697,9 +755,10 @@
                 return;
             }
             currentQuery = query;
-            currentPage = 1;
-            loadLegalResults(query, currentPage);
-            loadTaxEvasionResults(query);
+            currentLegalPage = 1;
+            currentTaxPage = 1;
+            loadLegalResults(query, currentLegalPage);
+            loadTaxEvasionResults(query, currentTaxPage);
             loadEnvironmentalScore(query);  // Charger le score environnemental
         });
 
@@ -707,25 +766,26 @@
         $('#legal-pagination').on('click', 'a.page-link', function(e) {
             e.preventDefault();
             let selectedPage = $(this).data('page');
-            if (selectedPage && selectedPage !== currentPage) {
+            if (selectedPage && selectedPage !== currentLegalPage) {
                 loadLegalResults(currentQuery, selectedPage);
             }
         });
 
-        // Pagination pour les autres colonnes si nécessaire
-        /*
+        // Pagination pour les résultats d'Évasion Fiscale
         $('#tax-evasion-pagination').on('click', 'a.page-link', function(e) {
             e.preventDefault();
             let selectedPage = $(this).data('page');
-            if (selectedPage && selectedPage !== currentPageTaxEvasion) {
+            if (selectedPage && selectedPage !== currentTaxPage) {
                 loadTaxEvasionResults(currentQuery, selectedPage);
             }
         });
 
+        // Pagination pour les résultats environnementaux (si implémenté)
+        /*
         $('#environmental-pagination').on('click', 'a.page-link', function(e) {
             e.preventDefault();
             let selectedPage = $(this).data('page');
-            if (selectedPage && selectedPage !== currentPageEnvironmental) {
+            if (selectedPage && selectedPage !== currentEnvironmentalPage) {
                 loadEnvironmentalScore(currentQuery, selectedPage);
             }
         });
@@ -743,6 +803,7 @@
                 url: '/details/' + id_affaire,
                 method: 'GET',
                 success: function(data) {
+                    console.log("Détails de l'affaire :", data); // Ajout de log
                     ajaxRequests--;
                     if (ajaxRequests === 0) {
                         hideLoading();
@@ -762,15 +823,9 @@
         });
 
         $('#show-visualization').on('click', function() {
-            const query = $('#company_query').val().trim();
-            if (query === '') {
-                alert('Veuillez entrer le nom d\'une entreprise.');
-                return;
-            }
-
-            if (window.taxEvasionData && window.taxEvasionData.nodes.length > 0) {
+            if (window.taxEvasionAllNodes && window.taxEvasionEdges && window.taxEvasionAllNodes.length > 0) {
                 $('#cy').show();
-                renderGraph(window.taxEvasionData);
+                renderGraph(window.taxEvasionAllNodes, window.taxEvasionEdges);
             } else {
                 alert('Aucune donnée disponible pour la visualisation.');
             }
