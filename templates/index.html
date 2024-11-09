@@ -95,9 +95,10 @@
         /* Style pour la visualisation Cytoscape */
         #cy {
             width: 100%;
-            height: 200px; /* Réduit encore de 300px à 200px */
+            height: 400px; /* Augmenté de 200px à 400px */
             border: 1px solid #444444;
             margin-top: 15px; /* Réduit de 20px à 15px */
+            margin-bottom: 50px; /* Ajouté pour créer un espace de 50px */
             display: none;
             background-color: #1e1f22;
             border-radius: 8px;
@@ -158,27 +159,16 @@
         }
 
         /* Effet de tapage pour le titre principal */
-        /* Effet de tapage pour le titre principal */
-.typed-cursor {
-    font-weight: bold;
-    color: #17a2b8;
-    animation: blink 0.7s infinite;
-    font-size: 1.2em; /* Taille du curseur */
-    vertical-align: middle; /* Aligne verticalement avec le texte */
-    display: inline; /* Assure que le curseur est en ligne avec le texte */
-    margin-left: 5px; /* Espace avant le curseur */
-    position: relative; /* Permet le décalage vertical */
-    top: -5px; /* Déplace le curseur vers le haut de 3px */
-}
-
-        {
+        .typed-cursor {
             font-weight: bold;
             color: #17a2b8;
             animation: blink 0.7s infinite;
-            font-size: 1.2em; /* Augmente la taille du curseur */
+            font-size: 1.2em; /* Taille du curseur */
             vertical-align: middle; /* Aligne verticalement avec le texte */
             display: inline; /* Assure que le curseur est en ligne avec le texte */
-            margin-left: 5px; /* Ajoute un léger espace avant le curseur */
+            margin-left: 5px; /* Espace avant le curseur */
+            position: relative; /* Permet le décalage vertical */
+            top: -5px; /* Déplace le curseur vers le haut de 5px */
         }
 
         @keyframes blink {

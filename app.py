@@ -3,6 +3,7 @@ import requests
 import sqlite3
 import os
 from bs4 import BeautifulSoup  # Importé pour le scraping CDP
+import time  # Pour le profilage des performances
 
 app = Flask(__name__)
 
@@ -15,15 +16,16 @@ headers = {
     'User-Agent': 'Mozilla/5.0'
 }
 
-
-# Fonction auxiliaire pour interroger la base de données SQLite
+# Fonction auxiliaire pour interroger la base de données SQLite avec des pragmas optimisés
 def query_database(query, args=(), one=False):
     with sqlite3.connect(DATABASE) as conn:
         conn.row_factory = sqlite3.Row
+        # Activer les pragmas pour la performance
+        conn.execute('PRAGMA synchronous = OFF;')
+        conn.execute('PRAGMA journal_mode = MEMORY;')
         cur = conn.execute(query, args)
         rv = cur.fetchall()
         return (rv[0] if rv else None) if one else rv
-
 
 # Fonction pour obtenir les détails d'un nœud par son node_id
 def get_node_details(node_id):
@@ -35,7 +37,7 @@ def get_node_details(node_id):
         'Others': 'nodes_others'
     }
     for node_type, table in tables.items():
-        query = f"SELECT * FROM {table} WHERE node_id = ?"
+        query = f"SELECT name FROM {table} WHERE node_id = ?"
         result = query_database(query, [node_id], one=True)
         if result:
             name = result['name'] if result['name'] else 'No Name'
@@ -48,10 +50,11 @@ def get_node_details(node_id):
     print(f"Aucun détail trouvé pour le nœud ID {node_id}")
     return None
 
-
 # Route pour le diagnostic d'évasion fiscale (Optimisée avec pagination et séparation des données)
 @app.route('/tax_evasion', methods=['POST'])
 def tax_evasion():
+    start_time = time.time()  # Début du profilage
+
     company_name = request.form.get('company_name', '').lower()
     page = int(request.form.get('page', 1))
     per_page = int(request.form.get('per_page', 10))  # Valeur par défaut de 10 éléments par page
@@ -81,9 +84,9 @@ def tax_evasion():
     added_node_ids = set()
     node_details = {}
 
-    # Récupérer les nœuds correspondant au nom de l'entreprise
+    # Préparer les requêtes pour toutes les tables
     for node_type, table in tables.items():
-        query = f"SELECT * FROM {table} WHERE LOWER(name) LIKE ?"
+        query = f"SELECT node_id, name FROM {table} WHERE LOWER(name) LIKE ?"
         matches = query_database(query, [f"%{company_name}%"])
         print(f"Table {table}, {len(matches)} correspondances trouvées.")
         if matches:
@@ -111,9 +114,11 @@ def tax_evasion():
     if not node_ids:
         print("Aucun nœud trouvé pour le nom de l'entreprise fourni.")
         paginated_results['total_results'] = 0
+        end_time = time.time()
+        print(f"Temps total pour /tax_evasion: {end_time - start_time} secondes")
         return jsonify({**paginated_results, **visualization_results})
 
-    # Récupérer les relations pour les nœuds trouvés
+    # Récupérer les relations pour les nœuds trouvés avec une seule requête
     placeholders = ','.join(['?'] * len(node_ids))
     query = f"""
         SELECT * FROM relationships 
@@ -131,13 +136,12 @@ def tax_evasion():
         related_node_ids.add(rel['node_id_start'])
         related_node_ids.add(rel['node_id_end'])
 
-    # Récupérer les détails des nœuds manquants
+    # Récupérer les détails des nœuds manquants en une seule requête par table
     missing_node_ids = related_node_ids - node_ids
     if missing_node_ids:
-        # Pour optimiser, récupérer tous les nœuds manquants en une seule requête par table
         for node_type, table in tables.items():
             placeholders_missing = ','.join(['?'] * len(missing_node_ids))
-            query_missing = f"SELECT * FROM {table} WHERE node_id IN ({placeholders_missing})"
+            query_missing = f"SELECT node_id, name FROM {table} WHERE node_id IN ({placeholders_missing})"
             matches_missing = query_database(query_missing, list(missing_node_ids))
             for row in matches_missing:
                 node_id = row['node_id']
@@ -215,6 +219,9 @@ def tax_evasion():
     print(f"Nombre total de nœuds pour la pagination : {total_nodes}")
     print(f"Nœuds renvoyés pour la page {page} : {len(paginated_nodes)}")
 
+    end_time = time.time()  # Fin du profilage
+    print(f"Temps total pour /tax_evasion: {end_time - start_time} secondes")
+
     # S'assurer que 'edges' est toujours présent
     if 'edges' not in visualization_results:
         visualization_results['edges'] = []
@@ -223,7 +230,6 @@ def tax_evasion():
     response_data = {**paginated_results, **visualization_results}
     print(f"Réponse JSON renvoyée : {response_data}")
     return jsonify(response_data)
-
 
 # Nouvelle Route pour le Score Environnemental CDP
 @app.route('/environmental_score', methods=['POST'])
@@ -302,12 +308,10 @@ def environmental_score():
     # Retourner les données JSON
     return jsonify(data)
 
-
 # Route pour la page d'accueil
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 # Route pour le diagnostic juridique (API Justice) avec pagination
 @app.route('/search', methods=['POST'])
@@ -335,7 +339,6 @@ def search():
     else:
         return jsonify({"error": f"Erreur {response.status_code} lors de la requête à l'API"}), 500
 
-
 # Route pour obtenir les détails d'une décision
 @app.route('/details/<id_affaire>')
 def details(id_affaire):
@@ -348,7 +351,6 @@ def details(id_affaire):
         return jsonify({'resume': resume_genere})
     else:
         return jsonify({"error": f"Erreur {response.status_code} lors de la récupération du détail de l'affaire"}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
